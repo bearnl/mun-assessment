@@ -1,0 +1,30 @@
+name: Clean up old build data
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete untagged versions
+        uses: actions/delete-package-versions@v4
+        with: 
+          package-name: 'mun-assessment'
+          package-type: 'container'
+          min-versions-to-keep: 0
+          delete-only-untagged-versions: 'true'
+
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 1
+          delete_run_by_conclusion_pattern: 'all'
+          delete_workflow_by_state_pattern: 'all'
+          delete_workflow_pattern: 'all'
